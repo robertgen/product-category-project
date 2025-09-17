@@ -7,8 +7,10 @@ import joblib
 import os
 
 # 1. Load dataset
-df = pd.read_csv("data/products.csv")
+df = pd.read_csv("product-category-project/data/products.csv")
 
+df.columns = df.columns.str.lower().str.replace(" ", "_").str.strip("_")
+df = df.dropna()
 # 2. Drop rows with missing product_title or category_label
 df = df.dropna(subset=["product_title", "category_label"])
 
@@ -35,8 +37,16 @@ pipeline = Pipeline([
 # 7. Train model on entire dataset
 pipeline.fit(X, y)
 
-# 8. Save the model
-os.makedirs("model", exist_ok=True)  # creează folderul dacă nu există
-joblib.dump(pipeline, "model/product_title_to_category.pkl")
+# calea către folderul model
+script_dir = os.path.dirname(os.path.abspath(__file__))
+model_dir = os.path.join(script_dir, "../model")
+os.makedirs(model_dir, exist_ok=True)
 
-print("Model trained and saved as 'model/product_title_to_category.pkl'")
+# calea completă a fișierului
+model_path = os.path.join(model_dir, "sentiment_model.pkl")
+
+joblib.dump(pipeline, model_path)
+
+print(f"Model antrenat și salvat la: {model_path}")
+
+print("Model trained and saved as '../model/sentiment_model.pkl'")
